@@ -1,15 +1,33 @@
 package com.example.android.background.utilities;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
+
+
+import com.example.android.background.MainActivity;
+import com.example.android.background.R;
+
 /**
  * Utility class for creating hydration notifications
  */
 public class NotificationUtils {
+    private static final int PENDING_INTENT_ID = 10;
+    private static final int NOTIFICATION__ID = 20;
 
-    // TODO (7) Create a method called remindUserBecauseCharging which takes a Context.
+    // COMPLETED (7) Create a method called remindUserBecauseCharging which takes a Context.
     // This method will create a notification for charging. It might be helpful
     // to take a look at this guide to see an example of what the code in this method will look like:
     // https://developer.android.com/training/notify-user/build-notification.html
-        // TODO (8) In the remindUser method use NotificationCompat.Builder to create a notification
+        // COMPLETED (8) In the remindUser method use NotificationCompat.Builder to create a notification
         // that:
         // - has a color of R.colorPrimary - use ContextCompat.getColor to get a compatible color
         // - has ic_drink_notification as the small icon
@@ -20,19 +38,40 @@ public class NotificationUtils {
         // - sets the notification defaults to vibrate
         // - uses the content intent returned by the contentIntent helper method for the contentIntent
         // - automatically cancels the notification when the notification is clicked
-        // TODO (9) If the build version is greater than JELLY_BEAN, set the notification's priority
+        // COMPLETED (9) If the build version is greater than JELLY_BEAN, set the notification's priority
         // to PRIORITY_HIGH.
-        // TODO (11) Get a NotificationManager, using context.getSystemService(Context.NOTIFICATION_SERVICE);
-        // TODO (12) Trigger the notification by calling notify on the NotificationManager.
+        // COMPLETED (11) Get a NotificationManager, using context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // COMPLETED (12) Trigger the notification by calling notify on the NotificationManager.
         // Pass in a unique ID of your choosing for the notification and notificationBuilder.build()
 
+    public static void remindUserBecauseCharging(Context context){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        builder.setSmallIcon(R.drawable.ic_drink_notification);
+        builder.setLargeIcon(largeIcon(context));
+        builder.setContentTitle(context.getString(R.string.charging_reminder_notification_title));
+        builder.setContentText(context.getString(R.string.charging_reminder_notification_body));
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(
+            context.getString(R.string.charging_reminder_notification_body)));
+        builder.setDefaults(Notification.DEFAULT_VIBRATE);
+        builder.setContentIntent(contentIntent(context));
+        builder.setAutoCancel(true);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            builder.setPriority(Notification.PRIORITY_HIGH);
+        }
 
-    // TODO (1) Create a helper method called contentIntent with a single parameter for a Context. It
+        NotificationManager manager = (NotificationManager) context.getSystemService(
+                Context.NOTIFICATION_SERVICE);
+
+        manager.notify(NOTIFICATION__ID, builder.build());
+    }
+
+    // COMPLETED (1) Create a helper method called contentIntent with a single parameter for a Context. It
     // should return a PendingIntent. This method will create the pending intent which will trigger when
     // the notification is pressed. This pending intent should open up the MainActivity.
-        // TODO (2) Create an intent that opens up the MainActivity
-        // TODO (3) Create a PendingIntent using getActivity that:
+        // COMPLETED (2) Create an intent that opens up the MainActivity
+        // COMPLETED (3) Create a PendingIntent using getActivity that:
             // - Take the context passed in as a parameter
             // - Takes an unique integer ID for the pending intent (you can create a constant for
             //   this integer above
@@ -41,12 +80,24 @@ public class NotificationUtils {
             // - Has the flag FLAG_UPDATE_CURRENT, so that if the intent is created again, keep the
             // intent but update the data
 
+    public static PendingIntent contentIntent(Context context){
+        Intent mainIntent = new Intent(context, MainActivity.class);
+        return PendingIntent.getActivity(
+                context,
+                PENDING_INTENT_ID,
+                mainIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+    }
 
-    // TODO (4) Create a helper method called largeIcon which takes in a Context as a parameter and
+    // COMPLETED (4) Create a helper method called largeIcon which takes in a Context as a parameter and
     // returns a Bitmap. This method is necessary to decode a bitmap needed for the notification.
-        // TODO (5) Get a Resources object from the context.
-        // TODO (6) Create and return a bitmap using BitmapFactory.decodeResource, passing in the
+        // COMPLETED (5) Get a Resources object from the context.
+        // COMPLETED (6) Create and return a bitmap using BitmapFactory.decodeResource, passing in the
         // resources object and R.drawable.ic_local_drink_black_24px
 
-
+    public static Bitmap largeIcon(Context context){
+        Resources resources = context.getResources();
+        return BitmapFactory.decodeResource(resources, R.drawable.ic_local_drink_black_24px);
+    }
 }
